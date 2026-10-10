@@ -37,15 +37,15 @@ name: terraform
 
 on:
   workflow_dispatch:
+
 permissions:
   id-token: write
-  contents: read  
+  contents: read
 
 jobs:
 
   plan:
     runs-on: ubuntu-latest
-   
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,9 +53,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::430643634962:role/oidc_example
+          role-to-assume: arn:aws:iam::430643634962:role/new_oidc
           aws-region: us-east-1
-  
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -75,14 +74,16 @@ jobs:
   apply:
     needs: plan
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: us-east-1 # change if needed
     environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::430643634962:role/new_oidc
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -97,4 +98,3 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
-
