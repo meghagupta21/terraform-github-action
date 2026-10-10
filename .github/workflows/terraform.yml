@@ -37,6 +37,9 @@ name: terraform
 
 on:
   workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read  
 
 jobs:
 
@@ -49,6 +52,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::430643634962:role/oidc_example
+          aws-region: us-east-1
+  
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
